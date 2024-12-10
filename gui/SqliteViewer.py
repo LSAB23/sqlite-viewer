@@ -1,6 +1,6 @@
 from pathlib import Path
 from tkinter import filedialog
-import sqlite_viewer
+import commands
 import ttkbootstrap as ttk
 from ttkbootstrap import Notebook
 from ttkbootstrap.tableview import Tableview
@@ -38,8 +38,8 @@ class App(ttk.Window):
         end = Path(file.name).suffix # type: ignore
         if end in ['.db','.sdb','.sqlite','.db3','.s3db','.sqlite3','.sl3','.db2','.s2db','.sqlite2','.sl2']:
             self.db = file.name # type: ignore
-            sqlite_viewer.db = self.db
-            sqlite_viewer.start()
+            commands.db = self.db
+            commands.start()
             self.run_app()
 
             return None
@@ -74,7 +74,7 @@ class TablesList(ttk.Treeview):
         xscroll.pack(side='bottom', fill='x')
 
         
-        tables = sqlite_viewer.get_tables
+        tables = commands.get_tables
         num = 0
 
         # get columns and sql query for a table in the db for the tables
@@ -83,7 +83,7 @@ class TablesList(ttk.Treeview):
             col_id = self.gen_id()
             table_name,table_sql = table[1],table[4]
             self.insert('', num, col_id, text=f'{table_name}  ({table_sql})')
-            rows = sqlite_viewer.get_rows(table_name)
+            rows = commands.get_rows(table_name)
             self.tables.append(table_name)
 
             for row in rows:
@@ -177,14 +177,14 @@ class BrowseFrame(ttk.Frame):
         # get's and display the table names
         coldata = []
 
-        for _table in sqlite_viewer.get_rows(self.default_table):
+        for _table in commands.get_rows(self.default_table):
             col_data = {'text': _table, 'stretch':False}
             coldata.append(col_data)
         
         return coldata
     
     def get_rows(self):
-        return sqlite_viewer.get_table_query(self.default_table)
+        return commands.get_table_query(self.default_table)
 
 if __name__ == '__main__':
     app = App(themename='superhero')
