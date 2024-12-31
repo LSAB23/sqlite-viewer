@@ -4,8 +4,8 @@ import commands
 import ttkbootstrap as ttk
 from ttkbootstrap import Notebook
 from ttkbootstrap.tableview import Tableview
-import os
-
+import sys
+import argparse
 
 
 class App(ttk.Window):
@@ -18,7 +18,7 @@ class App(ttk.Window):
         
 
 
-        
+
         if not self.db:
             style = ttk.Style()
             style.configure('.', font=('Helvetica', 13))
@@ -34,7 +34,11 @@ class App(ttk.Window):
             
     
     def choose_file(self):
-        file  = filedialog.askopenfile(title='Choose a Sqlite file ')
+        file = self.get_file()
+        if file.exists():
+            file  = file 
+        else:
+            file = filedialog.askopenfile(title='Choose a Sqlite file ')
         if file:
             end = Path(file.name).suffix # type: ignore
             if end in ['.db','.sdb','.sqlite','.db3','.s3db','.sqlite3','.sl3','.db2','.s2db','.sqlite2','.sl2']:
@@ -49,6 +53,15 @@ class App(ttk.Window):
                 return self.choose_file()
         else:
             return self.choose_file()
+        
+    def get_file(self) -> Path:
+        parse = argparse.ArgumentParser(description= ' Add a file path to the file you want to open')
+        parse.add_argument('script')
+        parse.add_argument('file', nargs='?', default='1')
+        parser = parse.parse_args(sys.argv)
+        path = Path(parser.file[0])
+        return path
+    
     def run_app(self):
         self.tab = Tabs()
         self.tab.pack(fill='both', expand=True)
